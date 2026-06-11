@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喜报生成器</title>
+    <link rel="icon" href="image/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark">喜</span>
+                <div>
+                    <h1>喜报生成器</h1>
+                    <span id="activeObjectLabel" class="active-label">未选择对象</span>
+                </div>
+            </div>
+            <div class="top-actions">
+                <span id="canvasInfo" class="canvas-info">1920 x 1080</span>
+                <button id="exportBtn" class="primary-button" type="button">导出 PNG</button>
+            </div>
+        </header>
+
+        <div class="workspace">
+            <aside class="control-panel" aria-label="编辑控制面板">
+                <section class="panel-section">
+                    <div class="section-title">
+                        <h2>画布</h2>
+                    </div>
+                    <div class="resolution-grid">
+                        <label>
+                            <span>宽</span>
+                            <input id="width" type="number" min="60" step="10" value="1920">
+                        </label>
+                        <label>
+                            <span>高</span>
+                            <input id="height" type="number" min="60" step="10" value="1080">
+                        </label>
+                        <button id="applySizeBtn" class="tool-button" type="button">应用</button>
+                    </div>
+                    <button id="useBgResolutionBtn" class="wide-button" type="button">使用背景图分辨率</button>
+
+                    <div class="preset-tools">
+                        <input id="resolutionPresetName" type="text" placeholder="分辨率方案名">
+                        <button id="saveResolutionPresetBtn" class="tool-button" type="button">保存</button>
+                    </div>
+                    <div class="preset-tools">
+                        <select id="resolutionPresetSelect" aria-label="分辨率方案"></select>
+                        <button id="loadResolutionPresetBtn" class="tool-button" type="button">加载</button>
+                        <button id="deleteResolutionPresetBtn" class="ghost-button" type="button">删除</button>
+                    </div>
+                </section>
+
+                <section class="panel-section">
+                    <div class="section-title">
+                        <h2>背景</h2>
+                    </div>
+                    <div class="field-row">
+                        <label class="color-field">
+                            <span>颜色</span>
+                            <input id="bgColor" type="color" value="#7a2b2f">
+                        </label>
+                        <label class="range-field">
+                            <span>透明度</span>
+                            <input id="bgOpacity" type="range" min="0" max="1" step="0.05" value="1">
+                        </label>
+                    </div>
+                    <label class="file-button">
+                        <input id="bgImage" type="file" accept="image/*">
+                        <span>选择背景图</span>
+                    </label>
+                </section>
+
+                <section class="panel-section">
+                    <div class="section-title inline-title">
+                        <h2>素材</h2>
+                        <label class="mini-file-button">
+                            <input id="assetFiles" type="file" accept="image/*" multiple>
+                            <span>添加</span>
+                        </label>
+                    </div>
+                    <div class="asset-tools">
+                        <button id="refreshAssetsBtn" class="tool-button" type="button">刷新索引</button>
+                        <button id="cleanupAssetsBtn" class="ghost-button" type="button">清理无用文件</button>
+                    </div>
+                    <div id="resourceGallery" class="resource-gallery" aria-label="素材库"></div>
+                </section>
+
+                <section class="panel-section text-section">
+                    <div class="section-title inline-title">
+                        <h2>文本</h2>
+                        <button id="addTextBtn" class="tool-button" type="button">新增文本框</button>
+                    </div>
+                    <div id="textPanel" class="text-panel"></div>
+                </section>
+
+                <section class="panel-section">
+                    <div class="section-title inline-title">
+                        <h2>图层</h2>
+                        <button id="refreshLayersBtn" class="tool-button" type="button">刷新</button>
+                    </div>
+                    <div id="layerPanel" class="layer-panel" aria-label="图层列表"></div>
+                </section>
+
+                <section class="panel-section">
+                    <div class="section-title">
+                        <h2>作品方案</h2>
+                    </div>
+                    <div class="preset-tools">
+                        <input id="templateName" type="text" placeholder="作品方案名">
+                        <button id="saveTemplateBtn" class="tool-button" type="button">保存</button>
+                    </div>
+                    <div class="preset-tools">
+                        <select id="templateSelect" aria-label="作品方案"></select>
+                        <button id="loadTemplateBtn" class="tool-button" type="button">加载</button>
+                        <button id="deleteTemplateBtn" class="ghost-button" type="button">删除</button>
+                    </div>
+                    <div class="preset-tools">
+                        <button id="exportTemplateJsonBtn" class="tool-button" type="button">导出 JSON</button>
+                        <label class="file-button compact-file-button">
+                            <input id="importTemplateJsonInput" type="file" accept="application/json,.json">
+                            <span>导入 JSON</span>
+                        </label>
+                    </div>
+                </section>
+            </aside>
+
+            <main class="stage-panel">
+                <div class="stage-toolbar">
+                    <div class="stage-actions">
+                        <button id="undoBtn" class="icon-text-button" type="button">撤销</button>
+                        <button id="redoBtn" class="icon-text-button" type="button">重做</button>
+                        <button id="resetViewBtn" class="icon-text-button" type="button">适屏</button>
+                        <button id="toggleGuidesBtn" class="icon-text-button" type="button">参考线</button>
+                        <span id="zoomLabel" class="zoom-label">100%</span>
+                    </div>
+                    <div class="align-tools" aria-label="对齐工具">
+                        <button type="button" data-align="left">左贴边</button>
+                        <button type="button" data-align="centerX">水平居中</button>
+                        <button type="button" data-align="right">右贴边</button>
+                        <button type="button" data-align="top">上贴边</button>
+                        <button type="button" data-align="centerY">垂直居中</button>
+                        <button type="button" data-align="bottom">下贴边</button>
+                        <button type="button" data-align="distributeX">水平等距</button>
+                        <button type="button" data-align="distributeY">垂直等距</button>
+                    </div>
+                </div>
+                <div id="canvasViewport" class="canvas-viewport">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="textContextMenu" class="context-menu" hidden>
+        <button type="button" data-style-action="bold">加粗</button>
+        <button type="button" data-style-action="italic">斜体</button>
+        <button type="button" data-style-action="underline">下划线</button>
+        <button type="button" data-style-action="strike">删除线</button>
+        <button type="button" data-style-action="shadow">阴影</button>
+        <button type="button" data-style-action="stroke">描边</button>
+        <div class="menu-control">
+            <label>
+                <span>描边色</span>
+                <input id="contextStrokeColor" type="color" value="#111111">
+            </label>
+            <label>
+                <span>粗细</span>
+                <input id="contextStrokeWidth" type="range" min="1" max="12" step="1" value="3">
+            </label>
+        </div>
+        <button type="button" data-style-action="deleteText" class="danger-menu-item">删除文本框</button>
+    </div>
+
+    <div id="toastHost" class="toast-host" aria-live="polite"></div>
+    <script src="script.js"></script>
+</body>
+</html>

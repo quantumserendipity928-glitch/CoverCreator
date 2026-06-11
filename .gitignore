@@ -1,0 +1,5 @@
+.playwright-mcp/
+.codex/
+__pycache__/
+*.pyc
+image/uploads/

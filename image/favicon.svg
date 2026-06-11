@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#b91f31"/>
+  <rect x="6" y="6" width="52" height="52" rx="7" fill="none" stroke="#c99a32" stroke-width="4"/>
+  <text x="32" y="45" fill="#fffaf0" font-size="38" font-family="serif" text-anchor="middle">喜</text>
+</svg>
